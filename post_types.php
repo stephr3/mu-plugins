@@ -15,3 +15,9 @@ function post_types() {
 }
 
 add_action('init', 'post_types');
+
+// remove default editor and title from Classes in admin - only custom fields will show 
+add_action('init', function() {
+remove_post_type_support( 'class', 'editor' );
+remove_post_type_support( 'class', 'title' );
+}, 99);
