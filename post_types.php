@@ -16,8 +16,8 @@ function post_types() {
   ));
 
   //Student Learning Resources Post Type
-  register_post_type('student-learning-resources', array(
-    'rewrite' => array('slug' => 'student-learning-resources'),
+  register_post_type('studentresources', array(
+    'rewrite' => array('slug' => 'studentresources'),
     'has_archive' => true,    
     'public' => true,
     'labels' => array(
@@ -37,3 +37,4 @@ add_action('init', 'post_types');
 add_action('init', function() {
 remove_post_type_support( 'class', 'editor' );
 }, 99);
+
