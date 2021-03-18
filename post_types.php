@@ -1,0 +1,39 @@
+<?php
+
+function post_types() {
+  register_post_type('class', array(
+    'rewrite' => array('slug' => 'classes'),
+    'has_archive' => true,    
+    'public' => true,
+    'labels' => array(
+      'name' => 'Classes',
+      'add_new_item' => 'Add New Class',
+      'edit_item' => 'Edit Class',
+      'all_items' => 'All Classes',
+      'singular_name' => 'Class'
+    ),
+    'menu_icon' => 'dashicons-book'
+  ));
+
+  //Student Learning Resources Post Type
+  register_post_type('student-learning-resources', array(
+    'rewrite' => array('slug' => 'student-learning-resources'),
+    'has_archive' => true,    
+    'public' => true,
+    'labels' => array(
+      'name' => 'Student Learning Resources',
+      'add_new_item' => 'Add New Resource',
+      'edit_item' => 'Edit Resource',
+      'all_items' => 'All Resources',
+      'singular_name' => 'Student Learning Resource'
+    ),
+    'menu_icon' => 'dashicons-portfolio'
+  ));
+}
+
+add_action('init', 'post_types');
+
+// remove default editor and title from Classes in admin - only custom fields will show 
+add_action('init', function() {
+remove_post_type_support( 'class', 'editor' );
+}, 99);
