@@ -16,7 +16,7 @@ function post_types() {
   ));
 
   //Student Learning Resources Post Type
-  register_post_type('studentresources', array(
+  register_post_type('studentresource', array(
     'rewrite' => array('slug' => 'studentresources'),
     'has_archive' => true,    
     'public' => true,
