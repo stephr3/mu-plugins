@@ -14,6 +14,21 @@ function post_types() {
     ),
     'menu_icon' => 'dashicons-book'
   ));
+
+  //Student Learning Resources Post Type
+  register_post_type('studentresource', array(
+    'rewrite' => array('slug' => 'studentresources'),
+    'has_archive' => true,    
+    'public' => true,
+    'labels' => array(
+      'name' => 'Student Learning Resources',
+      'add_new_item' => 'Add New Resource',
+      'edit_item' => 'Edit Resource',
+      'all_items' => 'All Resources',
+      'singular_name' => 'Student Learning Resource'
+    ),
+    'menu_icon' => 'dashicons-portfolio'
+  ));
 }
 
 add_action('init', 'post_types');
@@ -21,4 +36,5 @@ add_action('init', 'post_types');
 // remove default editor and title from Classes in admin - only custom fields will show 
 add_action('init', function() {
 remove_post_type_support( 'class', 'editor' );
+
 }, 99);
