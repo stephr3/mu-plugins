@@ -57,7 +57,7 @@ function region_custom_filter_dropdown() {
 
         echo '<label for="filter-by-region" class="screen-reader-text">Filter by region</label>';
         echo '<select name="r" id="filter-by-region">';
-            echo '<option selected value="0"> All region </option>';
+            echo '<option selected value="0"> All regions </option>';
             foreach( $regions as $region ) {
                 $selected = ( !empty( $_GET['r'] ) AND $_GET['r'] == $region->meta_value ) ? 'selected="selected"' : '';
                 echo '<option'. $selected . ' value="' . $region->meta_value .'">'. $region->meta_value . '</option>';
