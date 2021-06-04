@@ -5,8 +5,9 @@ function register_custom_columns( $columns ) {
         unset($columns['date']);
         $columns['Last Updated'] = 'Last Updated';
         $columns['Region'] = 'Region';
-        $columns["Updater Name"] = "Updater Name";
         $columns["Organization"] = "Organization";
+        $columns["Updater Name"] = "Updater Name";
+
         return $columns;
 }
 add_filter( 'manage_class_posts_columns', 'register_custom_columns' );
@@ -24,14 +25,14 @@ function add_custom_columns_data_to_display( $column_name, $post_id ) {
                 echo get_post_meta( $post_id, 'region', true);
                 echo '</p>';
                 break;
-        case 'Updater Name':
-                echo '<p class="updater_name">';
-                echo get_post_meta($post_id, 'updater_name', true);
-                echo '</p>';
-                break;
         case 'Organization':
                 echo '<p class="organization">';
                 echo get_post_meta($post_id, 'organization', true);
+                echo '</p>';
+                break;
+        case 'Updater Name':
+                echo '<p class="updater_name">';
+                echo get_post_meta($post_id, 'updater_name', true);
                 echo '</p>';
                 break;
         }
