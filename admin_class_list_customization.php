@@ -3,6 +3,7 @@
 // Register Last Updated and Region column to the table
 function register_custom_columns( $columns ) {
         unset($columns['date']);
+        // Add custom columns
         $columns['Last Updated'] = 'Last Updated';
         $columns['Region'] = 'Region';
         $columns["Organization"] = "Organization";
@@ -10,11 +11,13 @@ function register_custom_columns( $columns ) {
 
         return $columns;
 }
+// change this to manage_<post_type>_posts_columns
 add_filter( 'manage_class_posts_columns', 'register_custom_columns' );
 
-// Adding data to each row for the newly registed columns 
+// Adding data to each row for the newly registered columns 
 function add_custom_columns_data_to_display( $column_name, $post_id ) {
         switch ( $column_name ) {
+            // Change to desired columns
         case 'Last Updated':
                 echo '<p class="mod-date">';
                 echo get_the_modified_date().' at '.get_the_modified_time();
@@ -37,22 +40,26 @@ function add_custom_columns_data_to_display( $column_name, $post_id ) {
                 break;
         }
 }
+// change to 'manage_<post_type>_posts...'
 add_action( 'manage_class_posts_custom_column', 'add_custom_columns_data_to_display', 10, 2 );
 
 // Allow ASC/DESC sortable property
 function register_custom_columns_sortable( $columns ) {
+        // Use field names
         $columns['Last Updated'] = 'last_updated';
         $columns['Region'] = 'region';
         $columns['Updater Name'] = 'updater_name';
         $columns['Organization'] = 'organization';
         return $columns;
 }
+// change to 'manage_edit-<post_type>_sortable...'
 add_filter( 'manage_edit-class_sortable_columns', 'register_custom_columns_sortable' );
 
 
-// Custom field data like region require implemation unlike modified
+// Custom-fields like region require below function
 // region column sortable ASC/DESC by region
 function custom_column_orderby( $vars ) {
+    // change to desired fields
     if ( isset( $vars['orderby'] ) && 'region' == $vars['orderby'] ) {
         $vars = array_merge( $vars, array(
             'meta_key' => 'region',
@@ -74,7 +81,6 @@ function custom_column_orderby( $vars ) {
         ) );
     }
 
-
     return $vars;
 }
 
@@ -83,13 +89,15 @@ add_filter( 'request', 'custom_column_orderby' );
 // Adding filter dropdown for custom field data
 function custom_filter_dropdown() {
     global $post_type;
+    // Change to deisred post type
     if ( $post_type == 'class' ) {
-
-
+        //change to desired fields
         $regions = get_data_list("region");
         $organizations = get_data_list("organization");
         $updaters = get_data_list("updater_name");
         $dates = get_dates_list();
+
+        // Data, initial dropdown choice, URL param (choose a short-hand name), field  
         populate_dropdown_date($dates, "All dates", "m", "date");
         populate_dropdown($regions, "All regions", "r", "region");
         populate_dropdown($organizations, "All organizations", "org", "organization");
@@ -114,7 +122,7 @@ function populate_dropdown( $list_of_data, $select_none_option_name, $param_stri
         }
     echo '</select>';
 }
-// Date Dropdown -- Change this something else like a date picker
+// Date Dropdown -- TODO: change later this something else like a date picker
 function get_dates_list(){
     global $wpdb;
     $data = $wpdb->get_results("SELECT DISTINCT YEAR( post_modified ) AS year, MONTH( post_modified ) AS month FROM $wpdb->posts WHERE post_type = 'class' LIMIT 24");
@@ -137,7 +145,9 @@ add_action( 'restrict_manage_posts', 'custom_filter_dropdown' );
 
 // Add filter logic to region dropdown values
 function custom_filter_dropdown_logic( $query ) {
+    // change to desired post_type
   if( is_admin() AND $query->query['post_type'] == 'class' ) {
+    // Change field and url value
     $qv = &$query->query_vars;
     $qv['meta_query'] = array();
     $qv['date_query'] = array();
@@ -177,5 +187,6 @@ function custom_filter_dropdown_logic( $query ) {
 }
 
 add_filter( 'parse_query','custom_filter_dropdown_logic' );
+// Removes Default Date filter
 add_filter('months_dropdown_results', '__return_empty_array');
 ?>
