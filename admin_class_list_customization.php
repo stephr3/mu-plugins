@@ -65,13 +65,14 @@ function custom_column_orderby( $vars ) {
             'orderby' => 'meta_value'
         ) );
     }
-
+    
     if ( isset( $vars['orderby'] ) && 'happening_now' == $vars['orderby'] ) {
       $vars = array_merge( $vars, array(
           'meta_key' => 'happening_now',
           'orderby' => 'meta_value'
       ) );
-   
+    }
+
     if ( isset( $vars['orderby'] ) && 'organization' == $vars['orderby'] ) {
         $vars = array_merge( $vars, array(
             'meta_key' => 'organization',
@@ -86,7 +87,6 @@ function custom_column_orderby( $vars ) {
         ) );
     }
    
-  }
     return $vars;
 }
 
@@ -158,6 +158,7 @@ function custom_filter_dropdown_logic( $query ) {
     $qv['meta_query'] = array();
     $qv['date_query'] = array();
 
+    //region is select ACF field
     if( !empty( $_GET['r'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'region',
@@ -166,14 +167,8 @@ function custom_filter_dropdown_logic( $query ) {
         'type'      => 'CHAR'
       );
     }
-    if( !empty( $_GET['org'] ) ) {
-      $qv['meta_query'][] = array(
-        'field'     => 'organization',
-        'value'     => $_GET['org'],
-        'compare'   => '=',
-        'type'      => 'CHAR'
-      );
-    }
+    
+    //hn is select ACF field
     if( !empty( $_GET['hn'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'happening_now',
@@ -182,6 +177,18 @@ function custom_filter_dropdown_logic( $query ) {
         'type'      => 'CHAR'
       );
     }
+    
+    //org is select ACF field
+    if( !empty( $_GET['org'] ) ) {
+      $qv['meta_query'][] = array(
+        'field'     => 'organization',
+        'value'     => $_GET['org'],
+        'compare'   => '=',
+        'type'      => 'CHAR'
+      );
+    }
+    
+    //updn is text ACF field
     if( !empty( $_GET['updn'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'updater_name',
