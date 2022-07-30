@@ -6,16 +6,18 @@ function register_custom_columns( $columns ) {
         // Add custom columns
         $columns['Last Updated'] = 'Last Updated';
         $columns['Region'] = 'Region';
+        $columns["Happening Now?"] = "Happening Now?";
         $columns["Organization"] = "Organization";
         $columns["Updater Name"] = "Updater Name";
-
         return $columns;
 }
+
 // change this to manage_<post_type>_posts_columns
 add_filter( 'manage_class_posts_columns', 'register_custom_columns' );
 
 // Adding data to each row for the newly registered columns 
 function add_custom_columns_data_to_display( $column_name, $post_id ) {
+
         switch ( $column_name ) {
             // Change to desired columns
         case 'Last Updated':
@@ -33,6 +35,13 @@ function add_custom_columns_data_to_display( $column_name, $post_id ) {
                 echo get_post_meta($post_id, 'organization', true);
                 echo '</p>';
                 break;
+
+        case 'Happening Now?':
+                  echo '<p class="happening_now">';
+                  echo get_post_meta($post_id, 'happening_now', true);
+                  echo '</p>';
+                  break;
+
         case 'Updater Name':
                 echo '<p class="updater_name">';
                 echo get_post_meta($post_id, 'updater_name', true);
@@ -48,6 +57,7 @@ function register_custom_columns_sortable( $columns ) {
         // Use field names
         $columns['Last Updated'] = 'last_updated';
         $columns['Region'] = 'region';
+        $columns['Happening Now?'] = 'happening_now';
         $columns['Updater Name'] = 'updater_name';
         $columns['Organization'] = 'organization';
         return $columns;
@@ -66,7 +76,14 @@ function custom_column_orderby( $vars ) {
             'orderby' => 'meta_value'
         ) );
     }
-   
+    
+    if ( isset( $vars['orderby'] ) && 'happening_now' == $vars['orderby'] ) {
+      $vars = array_merge( $vars, array(
+          'meta_key' => 'happening_now',
+          'orderby' => 'meta_value'
+      ) );
+    }
+
     if ( isset( $vars['orderby'] ) && 'organization' == $vars['orderby'] ) {
         $vars = array_merge( $vars, array(
             'meta_key' => 'organization',
@@ -93,15 +110,19 @@ function custom_filter_dropdown() {
     if ( $post_type == 'class' ) {
         //change to desired fields
         $regions = get_data_list("region");
+        //$happening_now = get_data_list("happening_now"); //not functioning
         $organizations = get_data_list("organization");
         $updaters = get_data_list("updater_name");
         $dates = get_dates_list();
 
         // Data, initial dropdown choice, URL param (choose a short-hand name), field  
+
         populate_dropdown_date($dates, "All dates", "m", "date");
         populate_dropdown($regions, "All regions", "r", "region");
+        // populate_dropdown($happening_now, "Happening now?", "hn", "happening_now"); //not functioning
         populate_dropdown($organizations, "All organizations", "org", "organization");
         populate_dropdown($updaters, "All updaters", "updn", "updater");
+        
 
     }
 }
@@ -152,6 +173,7 @@ function custom_filter_dropdown_logic( $query ) {
     $qv['meta_query'] = array();
     $qv['date_query'] = array();
 
+    //region is select ACF field
     if( !empty( $_GET['r'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'region',
@@ -160,6 +182,21 @@ function custom_filter_dropdown_logic( $query ) {
         'type'      => 'CHAR'
       );
     }
+    
+    //hn is radio ACF field
+    // if( !empty( $_GET['hn'] ) ) {
+    //   $qv['meta_query'][] = array(
+    //     'field'     => 'happening_now',
+    //     'value'     => $_GET['hn'],
+    //     'compare'   => '=',
+    //     'type'      => 'CHAR'
+    //   );
+    //   echo '<pre>';
+    //     var_dump( $qv['meta_query'] );
+    //   echo '</pre>';      
+    // }
+    
+    //org is select ACF field
     if( !empty( $_GET['org'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'organization',
@@ -168,6 +205,8 @@ function custom_filter_dropdown_logic( $query ) {
         'type'      => 'CHAR'
       );
     }
+    
+    //updn is text ACF field
     if( !empty( $_GET['updn'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'updater_name',
