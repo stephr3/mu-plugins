@@ -58,7 +58,7 @@ function post_types() {
       'singular_name' => 'Real World Learning Resource'
     ),
     'menu_icon' => 'dashicons-location-alt'
-  ));
+  ));  
 }
 
 add_action('init', 'post_types');
