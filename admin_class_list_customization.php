@@ -14,6 +14,7 @@ add_filter( 'manage_class_posts_columns', 'register_custom_columns' );
 
 // Adding data to each row for the newly registered columns 
 function add_custom_columns_data_to_display( $column_name, $post_id ) {
+
         switch ( $column_name ) {
         case 'Last Updated':
                 echo '<p class="mod-date">';
@@ -99,14 +100,14 @@ function custom_filter_dropdown() {
 
 
         $regions = get_data_list("region");
-        $happening_now = get_data_list("happening_now");
+        //$happening_now = get_data_list("happening_now"); //not functioning
         $organizations = get_data_list("organization");
         $updaters = get_data_list("updater_name");
         $dates = get_dates_list();
         
         populate_dropdown_date($dates, "All dates", "m", "date");
         populate_dropdown($regions, "All regions", "r", "region");
-        populate_dropdown($happening_now, "Happening Now?", "hn", "happening_now");
+        // populate_dropdown($happening_now, "Happening now?", "hn", "happening_now"); //not functioning
         populate_dropdown($organizations, "All organizations", "org", "organization");
         populate_dropdown($updaters, "All updaters", "updn", "updater");
         
@@ -168,15 +169,18 @@ function custom_filter_dropdown_logic( $query ) {
       );
     }
     
-    //hn is select ACF field
-    if( !empty( $_GET['hn'] ) ) {
-      $qv['meta_query'][] = array(
-        'field'     => 'happening_now',
-        'value'     => $_GET['hn'],
-        'compare'   => '=',
-        'type'      => 'CHAR'
-      );
-    }
+    //hn is radio ACF field
+    // if( !empty( $_GET['hn'] ) ) {
+    //   $qv['meta_query'][] = array(
+    //     'field'     => 'happening_now',
+    //     'value'     => $_GET['hn'],
+    //     'compare'   => '=',
+    //     'type'      => 'CHAR'
+    //   );
+    //   echo '<pre>';
+    //     var_dump( $qv['meta_query'] );
+    //   echo '</pre>';      
+    // }
     
     //org is select ACF field
     if( !empty( $_GET['org'] ) ) {
