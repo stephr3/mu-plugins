@@ -3,23 +3,22 @@
 // Register Last Updated and Region column to the table
 function register_custom_columns( $columns ) {
         unset($columns['date']);
-        // Add custom columns
         $columns['Last Updated'] = 'Last Updated';
         $columns['Region'] = 'Region';
-        $columns["Happening Now?"] = "Happening Now?";
+        $columns["Happening Now?"] = "Happening Now?";        
         $columns["Organization"] = "Organization";
         $columns["Updater Name"] = "Updater Name";
+
         return $columns;
 }
 
 // change this to manage_<post_type>_posts_columns
 add_filter( 'manage_class_posts_columns', 'register_custom_columns' );
 
-// Adding data to each row for the newly registered columns 
+// Adding data to each row for the newly registed columns 
 function add_custom_columns_data_to_display( $column_name, $post_id ) {
-
         switch ( $column_name ) {
-            // Change to desired columns
+        // Change to desired columns            
         case 'Last Updated':
                 echo '<p class="mod-date">';
                 echo get_the_modified_date().' at '.get_the_modified_time();
@@ -35,13 +34,11 @@ function add_custom_columns_data_to_display( $column_name, $post_id ) {
                 echo get_post_meta($post_id, 'organization', true);
                 echo '</p>';
                 break;
-
         case 'Happening Now?':
                   echo '<p class="happening_now">';
                   echo get_post_meta($post_id, 'happening_now', true);
                   echo '</p>';
-                  break;
-
+                  break;                
         case 'Updater Name':
                 echo '<p class="updater_name">';
                 echo get_post_meta($post_id, 'updater_name', true);
@@ -54,10 +51,9 @@ add_action( 'manage_class_posts_custom_column', 'add_custom_columns_data_to_disp
 
 // Allow ASC/DESC sortable property
 function register_custom_columns_sortable( $columns ) {
-        // Use field names
         $columns['Last Updated'] = 'last_updated';
         $columns['Region'] = 'region';
-        $columns['Happening Now?'] = 'happening_now';
+        $columns['Happening Now?'] = 'happening_now';        
         $columns['Updater Name'] = 'updater_name';
         $columns['Organization'] = 'organization';
         return $columns;
@@ -66,24 +62,23 @@ function register_custom_columns_sortable( $columns ) {
 add_filter( 'manage_edit-class_sortable_columns', 'register_custom_columns_sortable' );
 
 
-// Custom-fields like region require below function
+// Custom field data like region require implemation unlike modified
 // region column sortable ASC/DESC by region
 function custom_column_orderby( $vars ) {
-    // change to desired fields
     if ( isset( $vars['orderby'] ) && 'region' == $vars['orderby'] ) {
         $vars = array_merge( $vars, array(
             'meta_key' => 'region',
             'orderby' => 'meta_value'
         ) );
     }
-    
+
     if ( isset( $vars['orderby'] ) && 'happening_now' == $vars['orderby'] ) {
       $vars = array_merge( $vars, array(
           'meta_key' => 'happening_now',
           'orderby' => 'meta_value'
       ) );
-    }
-
+    }    
+   
     if ( isset( $vars['orderby'] ) && 'organization' == $vars['orderby'] ) {
         $vars = array_merge( $vars, array(
             'meta_key' => 'organization',
@@ -98,6 +93,7 @@ function custom_column_orderby( $vars ) {
         ) );
     }
 
+
     return $vars;
 }
 
@@ -106,23 +102,17 @@ add_filter( 'request', 'custom_column_orderby' );
 // Adding filter dropdown for custom field data
 function custom_filter_dropdown() {
     global $post_type;
-    // Change to deisred post type
     if ( $post_type == 'class' ) {
-        //change to desired fields
+
+
         $regions = get_data_list("region");
-        //$happening_now = get_data_list("happening_now"); //not functioning
         $organizations = get_data_list("organization");
         $updaters = get_data_list("updater_name");
         $dates = get_dates_list();
-
-        // Data, initial dropdown choice, URL param (choose a short-hand name), field  
-
         populate_dropdown_date($dates, "All dates", "m", "date");
         populate_dropdown($regions, "All regions", "r", "region");
-        // populate_dropdown($happening_now, "Happening now?", "hn", "happening_now"); //not functioning
         populate_dropdown($organizations, "All organizations", "org", "organization");
         populate_dropdown($updaters, "All updaters", "updn", "updater");
-        
 
     }
 }
@@ -143,7 +133,7 @@ function populate_dropdown( $list_of_data, $select_none_option_name, $param_stri
         }
     echo '</select>';
 }
-// Date Dropdown -- TODO: change later this something else like a date picker
+// Date Dropdown -- Change this something else like a date picker
 function get_dates_list(){
     global $wpdb;
     $data = $wpdb->get_results("SELECT DISTINCT YEAR( post_modified ) AS year, MONTH( post_modified ) AS month FROM $wpdb->posts WHERE post_type = 'class' LIMIT 24");
@@ -166,14 +156,11 @@ add_action( 'restrict_manage_posts', 'custom_filter_dropdown' );
 
 // Add filter logic to region dropdown values
 function custom_filter_dropdown_logic( $query ) {
-    // change to desired post_type
   if( is_admin() AND $query->query['post_type'] == 'class' ) {
-    // Change field and url value
     $qv = &$query->query_vars;
     $qv['meta_query'] = array();
     $qv['date_query'] = array();
 
-    //region is select ACF field
     if( !empty( $_GET['r'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'region',
@@ -182,21 +169,6 @@ function custom_filter_dropdown_logic( $query ) {
         'type'      => 'CHAR'
       );
     }
-    
-    //hn is radio ACF field
-    // if( !empty( $_GET['hn'] ) ) {
-    //   $qv['meta_query'][] = array(
-    //     'field'     => 'happening_now',
-    //     'value'     => $_GET['hn'],
-    //     'compare'   => '=',
-    //     'type'      => 'CHAR'
-    //   );
-    //   echo '<pre>';
-    //     var_dump( $qv['meta_query'] );
-    //   echo '</pre>';      
-    // }
-    
-    //org is select ACF field
     if( !empty( $_GET['org'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'organization',
@@ -205,8 +177,6 @@ function custom_filter_dropdown_logic( $query ) {
         'type'      => 'CHAR'
       );
     }
-    
-    //updn is text ACF field
     if( !empty( $_GET['updn'] ) ) {
       $qv['meta_query'][] = array(
         'field'     => 'updater_name',
@@ -226,6 +196,5 @@ function custom_filter_dropdown_logic( $query ) {
 }
 
 add_filter( 'parse_query','custom_filter_dropdown_logic' );
-// Removes Default Date filter
 add_filter('months_dropdown_results', '__return_empty_array');
 ?>
